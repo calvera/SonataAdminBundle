@@ -135,6 +135,9 @@ class Datagrid implements DatagridInterface
 
         $data = $this->form->getData();
 
+        $originalWhereConditions = $this->query->getDQLPart('where');
+        $this->query->resetDQLPart('where');
+
         foreach ($this->getFilters() as $name => $filter) {
             $this->values[$name] = isset($this->values[$name]) ? $this->values[$name] : null;
             $filterFormName = $filter->getFormName();
@@ -143,6 +146,14 @@ class Datagrid implements DatagridInterface
             }
         }
 
+        $filterWhereConditions = $this->query->getDQLPart('where');
+        $this->query->resetDQLPart('where');
+
+        $and = $this->query->expr()->andX();
+        $and->add($originalWhereConditions);
+        $and->add($filterWhereConditions);
+        $this->query->where($and);
+         
         if (isset($this->values['_sort_by'])) {
             if (!$this->values['_sort_by'] instanceof FieldDescriptionInterface) {
                 throw new UnexpectedTypeException($this->values['_sort_by'], FieldDescriptionInterface::class);
