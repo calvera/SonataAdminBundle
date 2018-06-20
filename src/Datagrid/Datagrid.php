@@ -146,13 +146,15 @@ class Datagrid implements DatagridInterface
             }
         }
 
-        $filterWhereConditions = $this->query->getDQLPart('where');
-        $this->query->resetDQLPart('where');
+        if ($originalWhereConditions) {
+            $filterWhereConditions = $this->query->getDQLPart('where');
+            $this->query->resetDQLPart('where');
 
-        $and = $this->query->expr()->andX();
-        $and->add($originalWhereConditions);
-        $and->add($filterWhereConditions);
-        $this->query->where($and);
+            $and = $this->query->expr()->andX();
+            $and->add($originalWhereConditions);
+            $and->add($filterWhereConditions);
+            $this->query->where($and);
+        }
          
         if (isset($this->values['_sort_by'])) {
             if (!$this->values['_sort_by'] instanceof FieldDescriptionInterface) {
